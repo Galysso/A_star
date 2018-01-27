@@ -1,20 +1,20 @@
 #ifndef TAS_HPP
 #define TAS_HPP
 
-int plusDeux(int n);
+#include "noeud.hpp"
 
 class Tas {
 	private:
-		int N;
-		int maxN;
-		int *pile;
+		int size;
+		int maxSize;
+		Noeud **pile;
 
 	public:
-		Tas(int maxN);
+		Tas(int maxSize);
 		~Tas();
-		void empiler(int x);
+		void empiler(Noeud *n);
 		void depiler();
-		int top();
+		Noeud *top();
 		int getN();
 
 };

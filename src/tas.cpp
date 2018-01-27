@@ -1,83 +1,85 @@
 #include "tas.hpp"
+#include "noeud.hpp"
+
 #include <cassert>
 #include <iostream>
 #include <cstdlib>
 
 using namespace std;
 
-int plusDeux(int n) {
-	return n+2;
+int plusDeux(int size) {
+	return size+2;
 }
 
-Tas::Tas(int maxN) {
-	assert(maxN > 0);
+Tas::Tas(int maxSize) {
+	assert(maxSize > 0);
 
-	this->N = 0;
-	this->maxN = maxN;
-	this->pile = (int *) malloc(maxN*sizeof(int));
+	this->size = 0;
+	this->maxSize = maxSize;
+	this->pile = (Noeud **) malloc(maxSize*sizeof(Noeud*));
 }
 
 Tas::~Tas() {
 	free(this->pile);
 }
 
-void Tas::empiler(int x) {
-	if (N == maxN) {
-		maxN *= 2;
-		pile = (int *) realloc(pile, maxN*sizeof(int));
+void Tas::empiler(Noeud *n) {
+	if (size == maxSize) {
+		maxSize *= 2;
+		pile = (Noeud **) realloc(pile, maxSize*sizeof(Noeud *));
 	}
 
-	pile[N] = x;
+	pile[size] = n;
 
-	int n = N;
-	int nPere = (n-1)/2;
+	int ind = size;
+	int indPere = (ind-1)/2;
+	double nBorneInf = n->getBorneInf();
 
-	while (pile[nPere] > pile[n]) {
-		int temp = pile[nPere];
-		pile[nPere] = x;
-		pile[n] = temp;
-
-		n = nPere;
-		nPere = (n-1)/2;
+	while (pile[indPere]->getBorneInf() > nBorneInf) {
+		Noeud *temp = pile[indPere];
+		pile[indPere] = n;
+		pile[ind] = temp;
+		ind = indPere;
+		indPere = (ind-1)/2;
 	}
 
-	++N;
+	++size;
 }
 
 void Tas::depiler() {
-	assert(N > 0);
+	assert(size > 0);
 
-	--N;
-	int vN = pile[N];
-	pile[0] = vN;
-
-	int n = 0;
+	--size;
+	Noeud *nDesc = pile[size];
+	double nVal = nDesc->getBorneInf();
+	pile[0] = nDesc;
+	int ind = 0;
 	int indMinF = -1;
-	if (2 < N) {
-		if (pile[1] < pile[2]) {
+
+	if (2 < size) {
+		if (pile[1]->getBorneInf() < pile[2]->getBorneInf()) {
 			indMinF = 1;
 		} else {
 			indMinF = 2;
 		}
-	} else if (1 < N) {
+	} else if (1 < size) {
 		indMinF = 1;
 	}
 
-	while ((indMinF != -1) && (pile[indMinF] < vN)) {
-		pile[n] = pile[indMinF];
-		pile[indMinF] = vN;
+	while ((indMinF != -1) && (pile[indMinF]->getBorneInf() < nVal)) {
+		pile[ind] = pile[indMinF];
+		pile[indMinF] = nDesc;
+		ind = indMinF;
+		int indFG = (ind*2)+1;
+		int indFD = (ind+1)*2;
 
-		n = indMinF;
-		int indFG = (n*2)+1;
-		int indFD = (n+1)*2;
-
-		if (indFD < N) {
-			if (pile[indFG] < pile[indFD]) {
+		if (indFD < size) {
+			if (pile[indFG]->getBorneInf() < pile[indFD]->getBorneInf()) {
 				indMinF = indFG;
 			} else {
 				indMinF = indFD;
 			}
-		} else if (indFG < N) {
+		} else if (indFG < size) {
 			indMinF = indFG;
 		} else {
 			indMinF = -1;
@@ -85,12 +87,12 @@ void Tas::depiler() {
 	}
 }
 
-int Tas::top() {
-	assert(N > 0);
+Noeud *Tas::top() {
+	assert(size > 0);
 
 	return pile[0];
 }
 
 int Tas::getN() {
-	return N;
+	return size;
 }
