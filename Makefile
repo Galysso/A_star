@@ -1,5 +1,5 @@
-CXX = g++
-SOURCES = src/tas.cpp src/noeud.cpp
+CXX = g++ -std=c++11
+SOURCES = src/tas.cpp src/noeud.cpp src/donnees.cpp
 CFLAGS = -Wall -g -Ofast
 LDFLAGS =
 .PHONY = clean
