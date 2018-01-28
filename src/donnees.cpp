@@ -25,7 +25,7 @@ Donnees::Donnees(char *a, char *b, char *c) {
 		file >> s; file >> s; file >> s;
 
 		// ALLOCATION MEMOIRE DES MANEUVRES
-		mans = (maneuvre **) malloc(M*sizeof(maneuvre *));
+		mans = (manoeuvre **) malloc(M*sizeof(manoeuvre *));
 		// ALLOCATION MEMOIRE DES CONFLITS
 		confs = (bool ****) malloc((N-1)*sizeof(bool ***));
 		checkNG = (bool ***) malloc((N-1)*sizeof(bool ***));
@@ -50,16 +50,19 @@ Donnees::Donnees(char *a, char *b, char *c) {
 				file >> s;
 				confs[i][j][mi] = (bool *) malloc(M*sizeof(bool));
 				checkNG[i][j][mi] = true;
+				for (int k = 0; k < M; ++k) {
+					confs[i][j][mi][k] = false;
+				}
 				do {
 					mj = stoi(s);
 					confs[i][j][mi][mj] = true;
 					file >> s;
 				} while ((s != string("c")) && (s != string("m")));
 			} else if (s == string("m")) {
-				// LECTURE DES MANEUVRES
+				// LECTURE DES MANOEUVRES
 				int m;
 				file >> m;
-				maneuvre *man = (maneuvre *) malloc(sizeof(maneuvre));
+				manoeuvre *man = (manoeuvre *) malloc(sizeof(manoeuvre));
 				file >> man->cout;
 				file >> man->d0;
 				file >> man->d1;
@@ -83,7 +86,7 @@ int Donnees::getM() {
 	return M;
 }
 
-maneuvre *Donnees::getManeuvre(int m) {
+manoeuvre *Donnees::getManeuvre(int m) {
 	return mans[m];
 }
 

@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
 		mj = 96;
 		cout << "conflits(" << i << "," << j << "," << mi << "," << mj << ")=" << d.sontEnConflit(i,j,mi,mj) << endl;
 
+		getchar();
 		cout << "Fin" << endl;
 	}
 }
