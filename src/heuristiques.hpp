@@ -19,6 +19,7 @@ class Heuristiques {
 		Heuristiques(Donnees *d);
 		~Heuristiques();
 		int borneInfNaturelle(uint_fast8_t *etat, uint_fast8_t prof, uint_fast8_t m, int coutActuel);
+		//uint_fast8_t *solutionGloutonne(int *obj);
 };
 
 #endif

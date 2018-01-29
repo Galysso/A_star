@@ -29,6 +29,9 @@ int main(int argc, char *argv[]) {
 
 		// LANCEMENT DE L'ALGORITHME
 		A_star *algo = new A_star(d);
+		debutRes = clock();
 		algo->resoudre();
+		finRes = clock();
+		cout << "Temps de résolution : " << ((double)(finRes-debutRes)/CLOCKS_PER_SEC) << "s" << endl;
 	}
 }
