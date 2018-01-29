@@ -1,5 +1,4 @@
 #include "tas.hpp"
-#include "noeud.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -16,27 +15,27 @@ Tas::Tas(int maxSize) {
 
 	this->size = 0;
 	this->maxSize = maxSize;
-	this->pile = (Noeud **) malloc(maxSize*sizeof(Noeud*));
+	this->pile = (noeud **) malloc(maxSize*sizeof(noeud *));
 }
 
 Tas::~Tas() {
 	free(this->pile);
 }
 
-void Tas::empiler(Noeud *n) {
+void Tas::empiler(noeud *n) {
 	if (size == maxSize) {
 		maxSize *= 2;
-		pile = (Noeud **) realloc(pile, maxSize*sizeof(Noeud *));
+		pile = (noeud **) realloc(pile, maxSize*sizeof(noeud *));
 	}
 
 	pile[size] = n;
 
 	int ind = size;
 	int indPere = (ind-1)/2;
-	double nBorneInf = n->getBorneInf();
+	double nBorneInf = n->borneInf;
 
-	while (pile[indPere]->getBorneInf() > nBorneInf) {
-		Noeud *temp = pile[indPere];
+	while (pile[indPere]->borneInf > nBorneInf) {
+		noeud *temp = pile[indPere];
 		pile[indPere] = n;
 		pile[ind] = temp;
 		ind = indPere;
@@ -50,14 +49,14 @@ void Tas::depiler() {
 	assert(size > 0);
 
 	--size;
-	Noeud *nDesc = pile[size];
-	double nVal = nDesc->getBorneInf();
+	noeud *nDesc = pile[size];
+	double nVal = nDesc->borneInf;
 	pile[0] = nDesc;
 	int ind = 0;
 	int indMinF = -1;
 
 	if (2 < size) {
-		if (pile[1]->getBorneInf() < pile[2]->getBorneInf()) {
+		if (pile[1]->borneInf < pile[2]->borneInf) {
 			indMinF = 1;
 		} else {
 			indMinF = 2;
@@ -66,7 +65,7 @@ void Tas::depiler() {
 		indMinF = 1;
 	}
 
-	while ((indMinF != -1) && (pile[indMinF]->getBorneInf() < nVal)) {
+	while ((indMinF != -1) && (pile[indMinF]->borneInf < nVal)) {
 		pile[ind] = pile[indMinF];
 		pile[indMinF] = nDesc;
 		ind = indMinF;
@@ -74,7 +73,7 @@ void Tas::depiler() {
 		int indFD = (ind+1)*2;
 
 		if (indFD < size) {
-			if (pile[indFG]->getBorneInf() < pile[indFD]->getBorneInf()) {
+			if (pile[indFG]->borneInf < pile[indFD]->borneInf) {
 				indMinF = indFG;
 			} else {
 				indMinF = indFD;
@@ -87,7 +86,7 @@ void Tas::depiler() {
 	}
 }
 
-Noeud *Tas::top() {
+noeud *Tas::top() {
 	assert(size > 0);
 
 	return pile[0];

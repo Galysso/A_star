@@ -17,6 +17,7 @@ Donnees::Donnees(char *a, char *b, char *c) {
 	if (!file.is_open()) {
 		cout << "Le fichier \"" << filename << "\" n'a pas pu être ouvert." << endl;
 	} else {
+		cout << "Lecture des données..." << endl;
 		string s;
 		// LECTURE DE LA TAILLE DE L'INSTANCE
 		file >> s;
@@ -73,6 +74,26 @@ Donnees::Donnees(char *a, char *b, char *c) {
 				file >> s;
 			}
 		} while (!file.eof());
+
+
+		cout << "Pré-traitement des données..." << endl;
+		indMS = (uint_fast8_t *) malloc(M*sizeof(uint_fast8_t));
+		for (int i = 0; i < M; ++i) {
+			indMS[i] = i;
+		}
+
+		bool estTrie;
+		do {
+			estTrie = true;
+			for (int i = 1; i < M; ++i) {
+				if (mans[indMS[i-1]]->cout > mans[indMS[i]]->cout) {
+					estTrie = false;
+					int temp = indMS[i-1];
+					indMS[i-1] = indMS[i];
+					indMS[i] = temp;
+				}
+			}
+		} while (!estTrie);
 	}
 }
 
@@ -86,12 +107,20 @@ int Donnees::getM() {
 	return M;
 }
 
-manoeuvre *Donnees::getManeuvre(int m) {
-	return mans[m];
+manoeuvre **Donnees::getManoeuvres() {
+	return mans;
+}
+
+uint_fast8_t *Donnees::getIndMS() {
+	return indMS;
 }
 
 bool Donnees::sontEnConflit(int i, int j, int mi, int mj) {
-	assert(i < j);
+	if (mj < mi) {
+		int temp = mj;
+		mj = mi;
+		mi = temp;
+	}
 
 	if (checkNG[i][j][mi]) {
 		return confs[i][j][mi][mj];

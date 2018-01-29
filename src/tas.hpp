@@ -1,22 +1,21 @@
 #ifndef TAS_HPP
 #define TAS_HPP
 
-#include "noeud.hpp"
+#include "a_star.hpp"
 
 class Tas {
 	private:
 		int size;
 		int maxSize;
-		Noeud **pile;
+		noeud **pile;
 
 	public:
 		Tas(int maxSize);
 		~Tas();
-		void empiler(Noeud *n);
+		void empiler(noeud *n);
 		void depiler();
-		Noeud *top();
+		noeud *top();
 		int getN();
-
 };
 
 #endif
