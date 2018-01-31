@@ -34,7 +34,7 @@ void Tas::empiler(noeud *n) {
 	int indPere = (ind-1)/2;
 	double nBorneInf = n->borneInf;
 
-	while (pile[indPere]->borneInf > nBorneInf) {
+	while ((pile[indPere]->borneInf > nBorneInf) || (pile[indPere]->borneInf == nBorneInf) && (pile[indPere]->prof < n->prof)) {
 		noeud *temp = pile[indPere];
 		pile[indPere] = n;
 		pile[ind] = temp;
@@ -65,7 +65,7 @@ void Tas::depiler() {
 		indMinF = 1;
 	}
 
-	while ((indMinF != -1) && (pile[indMinF]->borneInf < nVal)) {
+	while ((indMinF != -1) && ((pile[indMinF]->borneInf < nVal) || ((pile[indMinF]->borneInf == nVal) && (pile[indMinF]->prof > nDesc->prof)))) {
 		pile[ind] = pile[indMinF];
 		pile[indMinF] = nDesc;
 		ind = indMinF;

@@ -41,6 +41,8 @@ void A_star::resoudre() {
 	node->borneInf = bestObj;
 	tas->empiler(node);
 
+	//bestObj = 19;
+
 	// ON PARCOURT L'ARBRE DE RECHERCHE
 	do {
 		// on récupère le noeud le plus prometteur
@@ -57,7 +59,7 @@ void A_star::resoudre() {
 				}
 				if (!flag) {
 					int nouvLB = h->borneInfNaturelle(node->etat, node->prof, m, node->coutActuel);
-					if (nouvLB != -1) {
+					if ((nouvLB != -1) && (nouvLB < bestObj)) {
 						noeud *nouveau = (noeud *) malloc(sizeof(noeud));
 						nouveau->coutActuel = node->coutActuel + mans[m]->cout;
 						nouveau->prof = node->prof + 1;

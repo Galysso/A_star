@@ -9,6 +9,7 @@ typedef struct {
 	int coutActuel;
 	uint_fast8_t prof;
 	uint_fast8_t *etat;
+	uint_fast8_t *indP;
 } noeud;
 
 class A_star {
