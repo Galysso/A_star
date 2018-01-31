@@ -1,5 +1,6 @@
 #include "heuristiques.hpp"
 #include "donnees.hpp"
+#include "a_star.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -17,9 +18,9 @@ Heuristiques::Heuristiques(Donnees *d) {
 
 Heuristiques::~Heuristiques() {}
 
-int Heuristiques::borneInfNaturelle(uint_fast8_t *etat, uint_fast8_t prof, uint_fast8_t m, int coutActuel) {
-	int resultat = coutActuel + mans[m]->cout;
-	int nj = prof+1;
+int Heuristiques::borneInfNaturelle(noeud *n, uint_fast8_t m) {
+	int resultat = n->coutActuel + mans[m]->cout;
+	uint nj = n->prof+1;
 	bool realisable = true;
 	bool manTrouvee = false;
 
@@ -27,10 +28,10 @@ int Heuristiques::borneInfNaturelle(uint_fast8_t *etat, uint_fast8_t prof, uint_
 		int indmj = 0;
 		while ((indmj < M) && (!manTrouvee)) {
 			int ni = 0;
-			while ((ni < prof) && !d->sontEnConflit(ni, nj, etat[ni], indMS[indmj])) {
+			while ((ni < n->prof) && !d->sontEnConflit(ni, nj, n->etat[ni], indMS[indmj])) {
 				++ni;
 			}
-			if ((ni == prof) && (!d->sontEnConflit(prof, nj, m, indMS[indmj]))) {
+			if ((ni == n->prof) && (!d->sontEnConflit(n->prof, nj, m, indMS[indmj]))) {
 				resultat += mans[indMS[indmj]]->cout;
 				manTrouvee = true;
 			} else {

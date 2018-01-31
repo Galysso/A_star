@@ -15,14 +15,51 @@ A_star::A_star(Donnees *d) {
 	resolu = false;
 	bestObj = -1;
 	bestSol = NULL;
+	N = d->getN();
+	M = d->getM();
 }
 
 A_star::~A_star() {}
 
+int A_star::plusPetitDomaine(noeud *n) {
+	cout << "COCO" << endl;
+	uint_fast8_t prof = n->prof;
+	uint_fast8_t ppDom = M+1;
+	uint_fast8_t *etat = n->etat;
+	int_fast8_t *indP = n->indP;
+	bool realisable = true;
+
+	int bestRes = -1;
+
+	uint_fast8_t nj = 0;
+	while (realisable && (nj < N)) {
+		if (indP[nj] != -1) {
+			uint_fast8_t cpt = 0;
+			for (int m = 0; m < M; ++m) {
+				uint_fast8_t i = 0;
+				while ((i < prof) && (!d->sontEnConflit(indP[i],nj,etat[i],m))) {
+					++i;
+				}
+				if (i == prof) {
+					++cpt;
+				}
+			}
+			if (cpt == 0) {
+				bool ralisable = false;
+				bestRes = -1;
+			} else if (cpt < ppDom) {
+				bestRes = nj;
+				ppDom = cpt;
+			}
+		}
+		++nj;
+	}
+
+	return bestRes;
+}
+
 void A_star::resoudre() {
 	cout << "Résolution..." << endl;
-	int N = d->getN();
-	int M = d->getM();
 	manoeuvre **mans = d->getManoeuvres();
 	uint_fast8_t *indMS = d->getIndMS();
 
@@ -50,6 +87,7 @@ void A_star::resoudre() {
 		tas->depiler();
 		if (node->prof < N) {
 			// on crée tous ses fils (réalisables)
+			//cout << "plus petit domaine : " << plusPetitDomaine(node) << endl;
 			for (int m = 0; m < M; ++m) {
 				bool flag = false;
 				int n = 0;
@@ -58,17 +96,20 @@ void A_star::resoudre() {
 					++n;
 				}
 				if (!flag) {
-					int nouvLB = h->borneInfNaturelle(node->etat, node->prof, m, node->coutActuel);
+					int nouvLB = h->borneInfNaturelle(node, m);
 					if ((nouvLB != -1) && (nouvLB < bestObj)) {
 						noeud *nouveau = (noeud *) malloc(sizeof(noeud));
 						nouveau->coutActuel = node->coutActuel + mans[m]->cout;
 						nouveau->prof = node->prof + 1;
 						nouveau->borneInf = nouvLB;
 						nouveau->etat = (uint_fast8_t *) malloc(nouveau->prof*sizeof(uint_fast8_t));
+						nouveau->indP = (int_fast8_t *) malloc(N*sizeof(int_fast8_t));
 						for (int k = 0; k < node->prof; ++k) {
 							nouveau->etat[k] = node->etat[k];
+							nouveau->indP[k] = node->indP[k];
 						}
 						nouveau->etat[node->prof] = m;
+						nouveau->indP[node->prof] = node->prof;
 						tas->empiler(nouveau);
 					}
 				}
@@ -78,7 +119,9 @@ void A_star::resoudre() {
 		} else if (node->coutActuel < bestObj) {
 			bestObj = node->coutActuel;
 			free(bestSol);
-			bestSol = node->etat;
+			for (int i = 0; i < N; ++i) {
+				bestSol[node->indP[i]] = node->etat[i];
+			}
 			free(node);
 			resolu = true;
 		} else {

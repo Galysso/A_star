@@ -2,10 +2,13 @@
 #define HEURISTIQUES_HPP
 
 #include "donnees.hpp"
+#include "a_star.hpp"
 
 #include <cstdint>
 #include <iostream>
 #include <cstdlib>
+
+//struct noeud;
 
 class Heuristiques {
 	private:
@@ -18,7 +21,7 @@ class Heuristiques {
 	public:
 		Heuristiques(Donnees *d);
 		~Heuristiques();
-		int borneInfNaturelle(uint_fast8_t *etat, uint_fast8_t prof, uint_fast8_t m, int coutActuel);
+		int borneInfNaturelle(noeud *n, uint_fast8_t m);
 		//uint_fast8_t *solutionGloutonne(int *obj);
 };
 

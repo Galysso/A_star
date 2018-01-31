@@ -2,14 +2,13 @@
 #define A_STAR_HPP
 
 #include "donnees.hpp"
-#include "heuristiques.hpp"
 
 typedef struct {
 	int borneInf;
 	int coutActuel;
 	uint_fast8_t prof;
 	uint_fast8_t *etat;
-	uint_fast8_t *indP;
+	int_fast8_t *indP;
 } noeud;
 
 class A_star {
@@ -18,10 +17,13 @@ class A_star {
 		Donnees *d;
 		uint_fast8_t *bestSol;
 		int bestObj;
+		uint_fast8_t N;
+		uint_fast8_t M;
 
 	public:
 		A_star(Donnees *d);
 		~A_star();
+		int plusPetitDomaine(noeud *n);
 		void resoudre();
 		uint_fast8_t *getSol();
 		int getObj();
