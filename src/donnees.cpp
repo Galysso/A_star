@@ -116,12 +116,13 @@ uint_fast8_t *Donnees::getIndMS() {
 }
 
 bool Donnees::sontEnConflit(int i, int j, int mi, int mj) {
-	if (mj < mi) {
-		int temp = mj;
-		mj = mi;
-		mi = temp;
+	if (j < i) {
+		int temp = j;
+		j = i;
+		i = temp;
 	}
 
+	//cout << "i=" << i << ", j=" << j << ", mi=" << mi << "mj=" << mj << endl;
 	if (checkNG[i][j][mi]) {
 		return confs[i][j][mi][mj];
 	} else {

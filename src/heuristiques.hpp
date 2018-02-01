@@ -21,7 +21,7 @@ class Heuristiques {
 	public:
 		Heuristiques(Donnees *d);
 		~Heuristiques();
-		int borneInfNaturelle(noeud *n, uint_fast8_t m);
+		int borneInfNaturelle(noeud *n, int_fast8_t nk, uint_fast8_t m);
 		//uint_fast8_t *solutionGloutonne(int *obj);
 };
 

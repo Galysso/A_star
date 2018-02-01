@@ -32,9 +32,9 @@ void Tas::empiler(noeud *n) {
 
 	int ind = size;
 	int indPere = (ind-1)/2;
-	double nBorneInf = n->borneInf;
+	double nBorneInf = n->selection;
 
-	while ((pile[indPere]->borneInf > nBorneInf) || (pile[indPere]->borneInf == nBorneInf) && (pile[indPere]->prof < n->prof)) {
+	while ((pile[indPere]->selection > nBorneInf) || (pile[indPere]->selection == nBorneInf) && (pile[indPere]->prof < n->prof)) {
 		noeud *temp = pile[indPere];
 		pile[indPere] = n;
 		pile[ind] = temp;
@@ -50,13 +50,13 @@ void Tas::depiler() {
 
 	--size;
 	noeud *nDesc = pile[size];
-	double nVal = nDesc->borneInf;
+	double nVal = nDesc->selection;
 	pile[0] = nDesc;
 	int ind = 0;
 	int indMinF = -1;
 
 	if (2 < size) {
-		if (pile[1]->borneInf < pile[2]->borneInf) {
+		if (pile[1]->selection < pile[2]->selection) {
 			indMinF = 1;
 		} else {
 			indMinF = 2;
@@ -65,7 +65,7 @@ void Tas::depiler() {
 		indMinF = 1;
 	}
 
-	while ((indMinF != -1) && ((pile[indMinF]->borneInf < nVal) || ((pile[indMinF]->borneInf == nVal) && (pile[indMinF]->prof > nDesc->prof)))) {
+	while ((indMinF != -1) && ((pile[indMinF]->selection < nVal) || ((pile[indMinF]->selection == nVal) && (pile[indMinF]->prof > nDesc->prof)))) {
 		pile[ind] = pile[indMinF];
 		pile[indMinF] = nDesc;
 		ind = indMinF;
@@ -73,7 +73,7 @@ void Tas::depiler() {
 		int indFD = (ind+1)*2;
 
 		if (indFD < size) {
-			if (pile[indFG]->borneInf < pile[indFD]->borneInf) {
+			if (pile[indFG]->selection < pile[indFD]->selection) {
 				indMinF = indFG;
 			} else {
 				indMinF = indFD;
