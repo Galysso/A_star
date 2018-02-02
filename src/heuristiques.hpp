@@ -22,7 +22,7 @@ class Heuristiques {
 		Heuristiques(Donnees *d);
 		~Heuristiques();
 		int borneInfNaturelle(noeud *n, int_fast8_t nk, uint_fast8_t m);
-		//uint_fast8_t *solutionGloutonne(int *obj);
+		uint_fast8_t *completionGloutonne(noeud *n, int *obj);
 };
 
 #endif

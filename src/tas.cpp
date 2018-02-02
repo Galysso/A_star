@@ -10,9 +10,10 @@ int plusDeux(int size) {
 	return size+2;
 }
 
-Tas::Tas(int maxSize) {
+Tas::Tas(int maxSize, int UB) {
 	assert(maxSize > 0);
 
+	this->UB = UB;
 	this->size = 0;
 	this->maxSize = maxSize;
 	this->pile = (noeud **) malloc(maxSize*sizeof(noeud *));
@@ -94,4 +95,8 @@ noeud *Tas::top() {
 
 int Tas::getN() {
 	return size;
+}
+
+void Tas::setUB(int UB) {
+	this->UB = UB;
 }

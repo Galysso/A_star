@@ -8,14 +8,16 @@ class Tas {
 		int size;
 		int maxSize;
 		noeud **pile;
+		int UB;
 
 	public:
-		Tas(int maxSize);
+		Tas(int maxSize, int UB);
 		~Tas();
 		void empiler(noeud *n);
 		void depiler();
 		noeud *top();
 		int getN();
+		void setUB(int UB);
 };
 
 #endif

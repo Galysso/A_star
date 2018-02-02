@@ -120,6 +120,10 @@ bool Donnees::sontEnConflit(int i, int j, int mi, int mj) {
 		int temp = j;
 		j = i;
 		i = temp;
+
+		temp = mj;
+		mj = mi;
+		mi = temp;
 	}
 
 	//cout << "i=" << i << ", j=" << j << ", mi=" << mi << "mj=" << mj << endl;

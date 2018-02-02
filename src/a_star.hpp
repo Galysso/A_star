@@ -9,7 +9,7 @@ typedef struct {
 	uint_fast8_t prof;
 	uint_fast8_t *etat;
 	int_fast8_t *indP;
-	int selection;
+	double selection;
 } noeud;
 
 class A_star {
