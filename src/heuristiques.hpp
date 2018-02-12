@@ -4,6 +4,7 @@
 #include "donnees.hpp"
 #include "a_star.hpp"
 
+#include <glpk.h>
 #include <cstdint>
 #include <iostream>
 #include <cstdlib>
@@ -17,11 +18,18 @@ class Heuristiques {
 		manoeuvre **mans;
 		int N;
 		int M;
+		int nbNG;
+
+		int *ia;
+		int *ja;
+		double *ar;
+		glp_prob *glpProb;
 
 	public:
 		Heuristiques(Donnees *d);
 		~Heuristiques();
 		int borneInfNaturelle(noeud *n, int_fast8_t nk, uint_fast8_t m);
+		int borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m);
 		uint_fast8_t *completionGloutonne(noeud *n, int *obj);
 };
 

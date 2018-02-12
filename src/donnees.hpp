@@ -20,12 +20,14 @@ class Donnees {
 		manoeuvre **mans;			// La liste des maneuvres (mans[i][m] : la manoeuvre m de l'avion i)
 		bool ***checkNG;			// La liste des avions et maneuvres mis en relation par la matrice creuse des conflits (checkNG[i][j][mj] = 1 si il existe des maneuvres mj de l'avion j incompatibles avec la manoeuvre mi de l'avion i)
 		bool ****confs;				// La liste des maneuvres incompatibles (conflits[i][j][mi][mj] : 1 si la manoeuvre mj de l'avion j est incompatible avec la maneuve mi de l'avion i)
+		int nbNG;
 
 	public:
 		Donnees(char *a, char *b, char *c);
 		~Donnees();
 		int getN();
 		int getM();
+		int getNbNG();
 		manoeuvre **getManoeuvres();
 		uint_fast8_t *getIndMS();
 		bool sontEnConflit(int i, int j, int mi, int mj);

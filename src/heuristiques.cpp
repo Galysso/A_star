@@ -2,6 +2,7 @@
 #include "donnees.hpp"
 #include "a_star.hpp"
 
+#include <glpk.h>
 #include <iostream>
 #include <cstdlib>
 #include <cstdint>
@@ -14,6 +15,73 @@ Heuristiques::Heuristiques(Donnees *d) {
 	this->M = d->getM();
 	this->indMS = d->getIndMS();
 	this->mans = d->getManoeuvres();
+	this->nbNG = d->getNbNG();
+
+	this->ia = (int *) malloc((1 + N*M + 2*nbNG)*sizeof(int));
+	this->ja = (int *) malloc((1 + N*M + 2*nbNG)*sizeof(int));
+	this->ar = (double *) malloc((1 + N*M + 2*nbNG)*sizeof(double));
+
+	this->glpProb = glp_create_prob();
+	glp_set_obj_dir(glpProb, GLP_MIN);
+	glp_add_cols(glpProb, N*M);
+	glp_add_rows(glpProb, N + nbNG + N);
+
+	for (int i = 0; i < N; ++i) {
+		glp_set_row_bnds(glpProb, i+1, GLP_LO, 1.0, 0.0);
+	}
+	for (int i = 0; i < nbNG; ++i) {
+		glp_set_row_bnds(glpProb, N+i+1, GLP_UP, 0.0, 1.0);
+	}
+
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < M; ++j) {
+			glp_set_col_kind(glpProb, i*M + j + 1, GLP_CV);
+			glp_set_col_bnds(glpProb, i*M + j + 1, GLP_DB, 0.0, 1.0);
+			glp_set_obj_coef(glpProb, i*M + j + 1, mans[j]->cout);
+		}
+	}
+
+
+	int cpt = 1;
+
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < M; ++j) {
+			ia[cpt] = i+1;
+			ja[cpt] = i*M+j+1;
+			ar[cpt] = 1;
+			++cpt;
+		}
+	}
+
+	int line = N+1;
+
+	for (int ni = 0; ni < N; ++ni) {
+		for (int nj = ni+1; nj < N; ++nj) {
+			for (int mi = 0; mi < M; ++mi) {
+				for (int mj = 0; mj < M; ++mj) {
+					if (d->sontEnConflit(ni, nj, mi, mj)) {
+						ia[cpt] = line;
+						ja[cpt] = ni*M + mi + 1;
+						ar[cpt] = 1;
+						++cpt;
+						ia[cpt] = line;
+						ja[cpt] = nj*M + mj + 1;
+						ar[cpt] = 1;
+						++cpt;
+						++line;
+					}
+				}
+			}
+		}
+	}
+
+	glp_term_out(false);
+	glp_load_matrix(glpProb, N*M + 2*nbNG, ia, ja, ar);
+	//glp_write_lp(glpProb, NULL, "modelisation");
+	//glp_simplex(glpProb, NULL);
+	
+	//cout << "cout optimal = " <<  glp_mip_obj_val(glpProb) << endl;
+
 }
 
 Heuristiques::~Heuristiques() {}
@@ -103,6 +171,38 @@ uint_fast8_t *Heuristiques::completionGloutonne(noeud *n, int *obj) {
 	}
 
 	return sol;
+}
+
+int Heuristiques::borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m) {
+	int cpt = 1;
+	uint_fast8_t prof = n->prof;
+	uint_fast8_t *etat = n->etat;
+	int_fast8_t *indP = n->indP;
+	for (int i = 0; i < N; ++i) {
+		if (indP[i] != -1) {
+			glp_set_col_bnds(glpProb, i*M + etat[indP[i]] + 1, GLP_LO, 1.0, 1.0);
+		}
+	}
+	glp_set_col_bnds(glpProb, nk*M + m + 1, GLP_LO, 1.0, 1.0);
+	glp_simplex(glpProb, NULL);
+
+	int resultat;
+	//glp_term_out(true);
+	//glp_write_lp(glpProb, NULL, "modelisation");
+	if ((glp_get_status(glpProb) == GLP_OPT) || (glp_get_status(glpProb) == GLP_FEAS)) {
+		resultat = glp_mip_obj_val(glpProb);
+	} else {
+		resultat = -1;
+	}
+
+	//getchar();
+
+	for (int i = 0; i < prof; ++i) {
+		glp_set_col_bnds(glpProb, i*M + etat[indP[i]] + 1, GLP_DB, 0.0, 1.0);
+	}
+	glp_set_col_bnds(glpProb, nk*M + m + 1, GLP_DB, 0.0, 1.0);
+
+	return resultat;
 }
 
 // AVEC DES SWAPS COMME N QUEEN

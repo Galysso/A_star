@@ -65,7 +65,6 @@ int A_star::plusPetitDomaine(noeud *n) {
 }
 
 void A_star::resoudre() {
-	cout << "Résolution..." << endl;
 	manoeuvre **mans = d->getManoeuvres();
 	uint_fast8_t *indMS = d->getIndMS();
 
@@ -75,6 +74,7 @@ void A_star::resoudre() {
 
 	Heuristiques *h = new Heuristiques(d);
 
+	cout << "Résolution..." << endl;
 	// INITIALISATION
 	noeud *node;
 	node = (noeud *) malloc(sizeof(noeud));
@@ -114,6 +114,7 @@ void A_star::resoudre() {
 						}
 						if (n == N) {
 							int nouvLB = h->borneInfNaturelle(node, ppDom, m);
+							//cout << "nouvLB = " << nouvLB << endl;
 							if ((nouvLB != -1) && (nouvLB < bestObj)) {
 								noeud *nouveau = (noeud *) malloc(sizeof(noeud));
 								nouveau->coutActuel = node->coutActuel + mans[m]->cout;

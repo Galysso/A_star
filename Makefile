@@ -1,7 +1,7 @@
 CXX = g++ -std=c++11
 SOURCES = src/tas.cpp src/donnees.cpp src/heuristiques.cpp src/a_star.cpp
 CFLAGS = -Wall -g -Ofast
-LDFLAGS =
+LDFLAGS = -lm -lglpk
 .PHONY = clean
 
 all: main
