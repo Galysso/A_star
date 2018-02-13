@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
 	if (argc != 4) {
 
 		cerr << "Le programme prend en paramètre 3 entiers, exemple :" << endl;
-		cerr << "\"./main 40 2 5\" lance le programme avec l'instance cluster_40ac_2err_5." << endl;
+		cerr << "\"./main 15 1 5\" lance le programme avec l'instance cluster_15ac_1err_5." << endl;
 
 	} else {
 		srand(time(NULL));

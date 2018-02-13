@@ -100,3 +100,17 @@ int Tas::getN() {
 void Tas::setUB(int UB) {
 	this->UB = UB;
 }
+
+void Tas::supprimerPires(int limite) {
+	int i = size-1;
+	int cpt = 0;
+	while (i > 0 && pile[i]->selection >= limite) {
+		free(pile[i]->indP);
+		free(pile[i]->etat);
+		free(pile[i]);
+		--size;
+		--i;
+		++cpt;
+	}
+	cout << cpt << " noeuds supprimés" << endl;
+}

@@ -111,20 +111,18 @@ int Heuristiques::borneInfNaturelle(noeud *n, int_fast8_t nk, uint_fast8_t m) {
 	indNj = 0;
 
 	while ((indNj < N) && (realisable)) {
-		uint_fast8_t nj = n->indP[indNj];
-		if ((nj == -1) && (nj != nk)) {
+		int_fast8_t nj = n->indP[indNj];
+		if ((nj == -1) && (indNj != nk)) {
 			bool manTrouvee = false;
 			uint_fast8_t indMj = 0;
 			while ((indMj < M) && !manTrouvee) {
 				uint_fast8_t mj = indMS[indMj];
 				indNi = 0;
-				uint_fast8_t ni = indP[indNi];
-				while ((indNi < N) && ((ni == -1) || (!d->sontEnConflit(ni, nj, etat[ni], mj)))) {
+				while ((indNi < N) && ((indP[indNi] == -1) || (!d->sontEnConflit(indNi, indNj, etat[indP[indNi]], mj)))) {
 					++indNi;
-					ni = indP[indNi];
 				}
 				if (indNi == N) {
-					if (!d->sontEnConflit(nk, nj, m, mj)) {
+					if (!d->sontEnConflit(nk, indNj, m, mj)) {
 						manTrouvee = true;
 						resultat += mans[mj]->cout;
 					}
@@ -179,6 +177,48 @@ uint_fast8_t *Heuristiques::completionGloutonne(noeud *n, int *obj) {
 			}
 		}
 		++nj;
+	}
+
+	return sol;
+}
+
+uint_fast8_t *Heuristiques::completionGloutonneInverse(noeud *n, int *obj) {
+	*obj = n->coutActuel;
+	uint_fast8_t *sol = (uint_fast8_t *) malloc(N*sizeof(uint_fast8_t));
+	for (int i = 0; i < N; ++i) {
+		if (n->indP[i] != -1) {
+			sol[i] = n->etat[n->indP[i]];
+		} else {
+			sol[i] = M;
+		}
+	}
+
+	bool gloutonSucces = true;
+	int_fast8_t nj = N-1;
+	while ((nj >= 0) && gloutonSucces) {
+		if (sol[nj] == M) {
+			uint_fast8_t indM = 0;
+			bool manTrouvee = false;
+			while ((indM < M) && !manTrouvee) {
+				uint_fast8_t m = indMS[indM];
+				uint_fast8_t ni = 0;
+				while ((ni < N) && ((sol[ni] == M) || !d->sontEnConflit(ni, nj, sol[ni], m))) {
+					++ni;
+				}
+				if (ni == N) {
+					manTrouvee = true;
+					sol[nj] = m;
+					*obj = *obj + mans[m]->cout;
+				}
+				++indM;
+			}
+			if (!manTrouvee) {
+				free(sol);
+				gloutonSucces = false;
+				*obj = -1;
+			}
+		}
+		--nj;
 	}
 
 	return sol;

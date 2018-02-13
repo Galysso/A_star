@@ -4,7 +4,7 @@
 #include "donnees.hpp"
 
 typedef struct {
-	double borneInf;
+	int borneInf;
 	int coutActuel;
 	uint_fast8_t prof;
 	uint_fast8_t *etat;

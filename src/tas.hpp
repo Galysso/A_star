@@ -18,6 +18,7 @@ class Tas {
 		noeud *top();
 		int getN();
 		void setUB(int UB);
+		void supprimerPires(int limite);
 };
 
 #endif

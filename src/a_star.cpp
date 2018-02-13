@@ -101,7 +101,7 @@ void A_star::resoudre() {
 		node = tas->top();
 		tas->depiler();
 		if (node->prof < N) {
-			double oldLB = node->borneInf;
+			int oldLB = node->borneInf;
 			//if (node->borneInf < bestObj) {
 				// on crée tous ses fils (réalisables)
 				int ppDom = plusPetitDomaine(node);
@@ -114,28 +114,11 @@ void A_star::resoudre() {
 							++n;
 						}
 						if (n == N) {
-							double nouvLB = h->borneInfNaturelle(node, ppDom, m);
-							bool isInt = false;
-							/*uint_fast8_t *test;
-							if () {
-								double nouvLB2 = h->borneInfGLPK(node, ppDom, m, &isInt, &test);
-								if (nouvLB2 > nouvLB) {
-									nouvLB = nouvLB2;
-								}
-								//cout << "isInt=" << isInt << endl;
-								if (isInt) {
-									cout << "IS INT" << endl;
-									if (nouvLB2 < bestObj) {
-										bestObj = nouvLB2;
-										cout << "bestObj = " << bestObj << endl;
-									}
-								}
-							}*/
+							int nouvLB = h->borneInfNaturelle(node, ppDom, m);
 							if ((nouvLB != -1) && (nouvLB < oldLB)) {
 								nouvLB = oldLB;
 							}
-							//cout << "nouvLB = " << nouvLB << endl;
-							if (!isInt && (nouvLB != -1) && (nouvLB < bestObj)) {
+							if ((nouvLB != -1) && (nouvLB < bestObj)) {
 								noeud *nouveau = (noeud *) malloc(sizeof(noeud));
 								nouveau->coutActuel = node->coutActuel + mans[m]->cout;
 								nouveau->prof = node->prof + 1;
@@ -152,20 +135,29 @@ void A_star::resoudre() {
 								}
 								nouveau->indP[ppDom] = node->prof;
 								nouveau->selection = nouvLB;
-								int UB;
+								int UB, UB2;
 								uint_fast8_t *Usol = h->completionGloutonne(node, &UB);
-								if (UB != -1) {
-									if (UB < bestObj) {
-										bestObj = UB;
-										free(bestSol);
-										bestSol = Usol;
-										cout << "(heuristique) nouvelle meilleure solution : (" << bestObj << ") ";
-										for (int i = 0; i < N; ++i) {
-											cout << (int) bestSol[i] << " ";
-										}
-										cout << endl << endl;
+								uint_fast8_t *Usol2 = h->completionGloutonneInverse(node, &UB2);
+								if (UB == -1 && UB2 != -1) {
+									UB = UB2;
+									Usol = Usol2;
+								} else if ((UB2 != -1) && (UB2 < UB)) {
+									//cout << "UB2" << endl;
+									UB = UB2;
+									free(Usol);
+									Usol = Usol2;
+								}
+								if ((UB != -1) && (UB < bestObj)) {
+									bestObj = UB;
+									free(bestSol);
+									bestSol = Usol;
+									cout << "(heuristique) nouvelle meilleure solution : (" << bestObj << ") ";
+									for (int i = 0; i < N; ++i) {
+										cout << (int) bestSol[i] << " ";
 									}
-									nouveau->selection = nouvLB;
+									cout << endl;
+									tas->supprimerPires(bestObj);
+									cout << endl << endl;
 								}
 								tas->empiler(nouveau);
 							}
