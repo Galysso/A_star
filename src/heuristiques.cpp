@@ -16,8 +16,9 @@ Heuristiques::Heuristiques(Donnees *d) {
 	this->indMS = d->getIndMS();
 	this->mans = d->getManoeuvres();
 	this->nbNG = d->getNbNG();
+	this->intSol = (uint_fast8_t *) malloc(N*sizeof(uint_fast8_t));
 
-	this->ia = (int *) malloc((1 + N*M + 2*nbNG)*sizeof(int));
+	/*this->ia = (int *) malloc((1 + N*M + 2*nbNG)*sizeof(int));
 	this->ja = (int *) malloc((1 + N*M + 2*nbNG)*sizeof(int));
 	this->ar = (double *) malloc((1 + N*M + 2*nbNG)*sizeof(double));
 
@@ -37,7 +38,7 @@ Heuristiques::Heuristiques(Donnees *d) {
 		for (int j = 0; j < M; ++j) {
 			glp_set_col_kind(glpProb, i*M + j + 1, GLP_CV);
 			glp_set_col_bnds(glpProb, i*M + j + 1, GLP_DB, 0.0, 1.0);
-			glp_set_obj_coef(glpProb, i*M + j + 1, mans[j]->cout);
+			glp_set_obj_coef(glpProb, i*M + j + 1, (double)mans[j]->cout);
 		}
 	}
 
@@ -77,10 +78,20 @@ Heuristiques::Heuristiques(Donnees *d) {
 
 	glp_term_out(false);
 	glp_load_matrix(glpProb, N*M + 2*nbNG, ia, ja, ar);
-	//glp_write_lp(glpProb, NULL, "modelisation");
-	//glp_simplex(glpProb, NULL);
+	glp_write_lp(glpProb, NULL, "modelisation");*/
+	/*glp_simplex(glpProb, NULL);
+	glp_intopt(glpProb, NULL);
 	
-	//cout << "cout optimal = " <<  glp_mip_obj_val(glpProb) << endl;
+	cout << "cout optimal = " << glp_get_obj_val(glpProb) << endl;
+	for (int i = 0; i < N; ++i) {
+		cout << i << ":";
+		for (int j = 0; j < M; ++j) {
+			if (glp_get_col_prim(glpProb, i*M + j + 1) > 0.001) {
+				cout << " (" << glp_get_col_prim(glpProb, i*M + j + 1) << ")" << j;
+			}
+		}
+		cout << endl;
+	}*/
 
 }
 
@@ -173,7 +184,7 @@ uint_fast8_t *Heuristiques::completionGloutonne(noeud *n, int *obj) {
 	return sol;
 }
 
-int Heuristiques::borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m) {
+double Heuristiques::borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m, bool *integer, uint_fast8_t **intSol) {
 	int cpt = 1;
 	uint_fast8_t prof = n->prof;
 	uint_fast8_t *etat = n->etat;
@@ -186,16 +197,31 @@ int Heuristiques::borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m) {
 	glp_set_col_bnds(glpProb, nk*M + m + 1, GLP_LO, 1.0, 1.0);
 	glp_simplex(glpProb, NULL);
 
-	int resultat;
-	//glp_term_out(true);
-	//glp_write_lp(glpProb, NULL, "modelisation");
+	double resultat;
 	if ((glp_get_status(glpProb) == GLP_OPT) || (glp_get_status(glpProb) == GLP_FEAS)) {
-		resultat = glp_mip_obj_val(glpProb);
+		resultat = glp_get_obj_val(glpProb);
+
+		*integer = true;
+		int ni = 0;
+		while (*integer && ni < N) {
+			int mi = 0;
+			while (*integer && mi < M) {
+				//cout << glp_get_col_prim(glpProb, ni*M + mi + 1) << endl;
+				if (glp_get_col_prim(glpProb, ni*M + mi + 1) > 0.999) {
+
+				} else {
+					*integer = glp_get_col_prim(glpProb, ni*M + mi + 1) < 0.001;
+				}
+				++mi;
+			}
+			++ni;
+		}
+
 	} else {
+		//cout << "unfeasible" << endl;
+		*integer = false;
 		resultat = -1;
 	}
-
-	//getchar();
 
 	for (int i = 0; i < prof; ++i) {
 		glp_set_col_bnds(glpProb, i*M + etat[indP[i]] + 1, GLP_DB, 0.0, 1.0);

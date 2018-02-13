@@ -20,6 +20,8 @@ class Heuristiques {
 		int M;
 		int nbNG;
 
+		uint_fast8_t *intSol;
+
 		int *ia;
 		int *ja;
 		double *ar;
@@ -29,7 +31,7 @@ class Heuristiques {
 		Heuristiques(Donnees *d);
 		~Heuristiques();
 		int borneInfNaturelle(noeud *n, int_fast8_t nk, uint_fast8_t m);
-		int borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m);
+		double borneInfGLPK(noeud *n, int_fast8_t nk, uint_fast8_t m, bool *integer, uint_fast8_t **intSol);
 		uint_fast8_t *completionGloutonne(noeud *n, int *obj);
 };
 

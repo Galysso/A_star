@@ -101,6 +101,7 @@ void A_star::resoudre() {
 		node = tas->top();
 		tas->depiler();
 		if (node->prof < N) {
+			double oldLB = node->borneInf;
 			//if (node->borneInf < bestObj) {
 				// on crée tous ses fils (réalisables)
 				int ppDom = plusPetitDomaine(node);
@@ -113,9 +114,28 @@ void A_star::resoudre() {
 							++n;
 						}
 						if (n == N) {
-							int nouvLB = h->borneInfNaturelle(node, ppDom, m);
+							double nouvLB = h->borneInfNaturelle(node, ppDom, m);
+							bool isInt = false;
+							/*uint_fast8_t *test;
+							if () {
+								double nouvLB2 = h->borneInfGLPK(node, ppDom, m, &isInt, &test);
+								if (nouvLB2 > nouvLB) {
+									nouvLB = nouvLB2;
+								}
+								//cout << "isInt=" << isInt << endl;
+								if (isInt) {
+									cout << "IS INT" << endl;
+									if (nouvLB2 < bestObj) {
+										bestObj = nouvLB2;
+										cout << "bestObj = " << bestObj << endl;
+									}
+								}
+							}*/
+							if ((nouvLB != -1) && (nouvLB < oldLB)) {
+								nouvLB = oldLB;
+							}
 							//cout << "nouvLB = " << nouvLB << endl;
-							if ((nouvLB != -1) && (nouvLB < bestObj)) {
+							if (!isInt && (nouvLB != -1) && (nouvLB < bestObj)) {
 								noeud *nouveau = (noeud *) malloc(sizeof(noeud));
 								nouveau->coutActuel = node->coutActuel + mans[m]->cout;
 								nouveau->prof = node->prof + 1;
